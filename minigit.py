@@ -77,7 +77,9 @@ class MiniGit:
             raise ValueError("commit inexistente")
 
         self.__passos = 1
-        return tuple(self.__pais[commit])    @property
+        return tuple(self.__pais[commit])    
+    
+    @property
     def branch_atual(self):
         return self.__branch_atual
 
@@ -199,4 +201,70 @@ class MiniGit:
 
         return tuple(resposta)
 
-    
+def tentar(acao):
+    try:
+        acao()
+    except ValueError as erro:
+        print("erro:", erro)
+
+git = MiniGit()
+
+git.commitar("primeiro commit")
+print(git.passos)
+
+git.commitar("segundo commit")
+
+git.criar_branch("feature")
+print(git.passos)
+
+git.commitar("terceiro commit")
+
+git.trocar_branch("feature")
+
+git.commitar("quarto commit")
+
+git.trocar_branch("main")
+
+git.mesclar("feature")
+
+print(git.pais("c5"))
+
+print(git.log(), git.passos)
+
+print(git.mensagem("c3"), git.passos)
+
+print(git.buscar("quarto"), git.passos)
+
+print(git.merges())
+
+git.trocar_branch("feature")
+
+print(git.log(), git.passos)
+
+git.trocar_branch("main")
+
+tentar(lambda: git.trocar_branch("inexistente"))
+tentar(lambda: git.criar_branch("main"))
+tentar(lambda: git.mesclar("main"))
+tentar(lambda: git.pais("c99"))
+
+def medir(quantidade):
+    git = MiniGit()
+
+    for numero in range(quantidade):
+        git.commitar(f"commit {numero}")
+
+    passos_commitar = git.passos
+
+    git.log()
+
+    passos_log = git.passos
+
+    return passos_commitar, passos_log
+
+print()
+print("commits   passos do commitar   passos do log")
+
+for quantidade in (10, 100, 1000):
+    commitar, log = medir(quantidade)
+    print(f"{quantidade:<10}{commitar:<22}{log}")
