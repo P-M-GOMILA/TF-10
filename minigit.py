@@ -77,4 +77,63 @@ class MiniGit:
             raise ValueError("commit inexistente")
 
         self.__passos = 1
-        return tuple(self.__pais[commit])
+        return tuple(self.__pais[commit])    @property
+    def branch_atual(self):
+        return self.__branch_atual
+
+    def criar_branch(self, nome):
+        """
+        Cria uma branch.
+        Gasta 1 passo.
+        """
+        if nome in self.__branches:
+            raise ValueError("branch existente")
+
+        ponta = self.__branches[self.__branch_atual]
+
+        if ponta is None:
+            raise ValueError("nao ha commits")
+
+        self.__branches[nome] = ponta
+        self.__passos = 1
+
+    def trocar_branch(self, nome):
+        """
+        Troca de branch.
+        Gasta 1 passo.
+        """
+        if nome not in self.__branches:
+            raise ValueError("branch inexistente")
+
+        self.__branch_atual = nome
+        self.__passos = 1
+
+    def mesclar(self, nome):
+        """
+        Cria commit de merge.
+        Gasta 2 passos.
+        """
+        if nome not in self.__branches:
+            raise ValueError("branch inexistente")
+
+        if nome == self.__branch_atual:
+            raise ValueError("nao pode mesclar a propria branch")
+
+        pai1 = self.__branches[self.__branch_atual]
+        pai2 = self.__branches[nome]
+
+        self.__contador += 1
+
+        identificador = f"c{self.__contador}"
+
+        self.__pais[identificador] = [pai1, pai2]
+        self.__mensagens[identificador] = f"merge de {nome}"
+
+        self.__branches[self.__branch_atual] = identificador
+
+        self.__passos = 2
+
+        return identificador
+
+
+    
