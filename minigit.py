@@ -134,6 +134,69 @@ class MiniGit:
         self.__passos = 2
 
         return identificador
+    
+    def log(self):
+        """
+        Percorre o histórico usando fila.
+        """
+        ponta = self.__branches[self.__branch_atual]
 
+        if ponta is None:
+            self.__passos = 0
+            return ()
+
+        fila = deque([ponta])
+        visitados = set()
+        resultado = []
+
+        while fila:
+            atual = fila.popleft()
+
+            if atual in visitados:
+                continue
+
+            visitados.add(atual)
+            resultado.append(atual)
+
+            for pai in self.__pais[atual]:
+                fila.append(pai)
+
+        self.__passos = len(resultado)
+
+        return tuple(resultado)
+
+    def buscar(self, texto):
+        """
+        Procura mensagem.
+        """
+        passos = 0
+
+        for numero in range(1, self.__contador + 1):
+            passos += 1
+
+            commit = f"c{numero}"
+
+            if texto in self.__mensagens[commit]:
+                self.__passos = passos
+                return commit
+
+        self.__passos = passos
+        return None
+
+    def merges(self):
+        """
+        Retorna commits de merge.
+        """
+        resposta = []
+
+        for numero in range(1, self.__contador + 1):
+            commit = f"c{numero}"
+
+            if len(self.__pais[commit]) > 1:
+                resposta.append(commit)
+
+        self.__passos = self.__contador
+
+        return tuple(resposta)
 
     
