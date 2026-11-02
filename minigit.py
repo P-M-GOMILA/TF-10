@@ -137,7 +137,7 @@ class MiniGit:
     
     def log(self):
         """
-        Percorre o histórico usando fila.
+        Percorre o histórico usando fila..
         """
         ponta = self.__branches[self.__branch_atual]
 
